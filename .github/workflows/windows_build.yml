@@ -24,7 +24,7 @@ jobs:
 
     - name: Build with PyInstaller
       run: |
-        pyinstaller TtT_ScoreInput.py --noconsole --onefile --name TtT_ScoreInput
+        pyinstaller TtT_ScoreInput.py --noconsole --name TtT_ScoreInput
 
     - name: Clean up build directory
       run: |
@@ -34,7 +34,7 @@ jobs:
       uses: actions/upload-artifact@v3
       with:
         name: TtT_ScoreInput
-        path: dist/TtT_ScoreInput # 出力されたファイルのパスを指定
+        path: dist/TtT_ScoreInput/** # dist/TtT_ScoreInputフォルダ内のすべてのファイルを指定
 
     - name: Delete dist directory
       run: |
