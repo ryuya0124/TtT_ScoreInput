@@ -39,10 +39,13 @@ jobs:
         cd dist
         zip -r TtT_ScoreInput.zip TtT_ScoreInput
         cd ..
-        rm -rf dist
 
     - name: Upload Artifact
       uses: actions/upload-artifact@v3
       with:
         name: TtT_ScoreInput
         path: dist/TtT_ScoreInput.zip  # 出力されたZIPファイルのパスを指定
+
+    - name: Delete dist directory
+      run: |
+        rm -rf dist
