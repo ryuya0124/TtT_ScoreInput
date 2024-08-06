@@ -1,0 +1,50 @@
+name: Build TtT_ScoreInput_macos
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: macos-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    - name: Install Homebrew
+      run: |
+        /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+
+    - name: Install Python 3.12.4
+      run: |
+        brew install python@3.12
+        brew link --force python@3.12
+
+    - name: Set up Python
+      run: |
+        export PATH="/opt/homebrew/opt/python@3.12/bin:$PATH"
+        python3 -m pip install --upgrade pip
+        pip install git+https://github.com/fa0311/pyinstaller
+        pip install pandas openpyxl
+
+    - name: Install Tkinter
+      run: |
+        brew install python-tk
+
+    - name: Build with PyInstaller
+      run: |
+        pyinstaller --windowed TtT_ScoreInput.py --name TtT_ScoreInput
+
+    - name: Clean up build directory
+      run: |
+        rm -rf build
+
+    - name: Upload Artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: TtT_ScoreInput
+        path: dist/TtT_ScoreInput/** # dist/TtT_ScoreInputフォルダ内のすべてのファイルを指定
+
+    - name: Delete dist directory
+      run: |
+        rm -rf dist
