@@ -7,6 +7,12 @@ import os
 import glob
 import webbrowser
 import sys
+import ctypes
+
+try:
+    ctypes.windll.shcore.SetProcessDpiAwareness(True)
+except:
+    pass
 
 # スクリプトのパスを取得する関数
 def get_script_dir():
