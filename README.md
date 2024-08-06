@@ -52,4 +52,4 @@ CSVファイルはこちらから利用できます。<br>
 
 # 作成者
 りゅうや<br>
-Twitter(X) : [@_ryuya_0124](https://x.com/_ryuya_0124)
+Twitter(𝕏) : [@_ryuya_0124](https://x.com/_ryuya_0124)
