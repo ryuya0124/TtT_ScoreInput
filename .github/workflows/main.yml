@@ -1,0 +1,48 @@
+name: Build TtT_ScoreInput
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.12'  # 使用するPythonのバージョンを指定
+
+    - name: Install dependencies
+      run: |
+        pip install git+https://github.com/fa0311/pyinstaller
+        pip install pandas openpyxl
+
+    - name: Build with PyInstaller
+      run: |
+        pyinstaller TtT_ScoreInput.py --noconsole
+
+    - name: Clean up build directory
+      run: |
+        rm -rf build
+
+    - name: Compress dist folder contents
+      run: |
+        cd dist
+        zip -r TtT_ScoreInput.zip TtT_ScoreInput
+        cd ..
+        rm -rf dist
+
+    - name: Upload Artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: TtT_ScoreInput
+        path: dist/TtT_ScoreInput.zip  # 出力されたZIPファイルのパスを指定
