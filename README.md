@@ -33,7 +33,7 @@ CSVファイルはこちらから利用できます。<br>
 ----|----
 | Windows11 | 対応 |
 | Windows10 | 多分動く！ |
-| Ubuntu | coming soon |
+| Ubuntu | デバッカー求む! |
 | MacOS | coming soon |
 
 <br>
