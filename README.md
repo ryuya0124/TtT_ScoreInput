@@ -14,8 +14,8 @@ CSVファイルはこちらから利用できます。<br>
 [Release](https://github.com/ryuya0124/TtT_ScoreInput/releases)から環境に合わせたファイルをダウンロードします。<br>
 <br>
 実行ファイル<br>
-Windows : TtT_ScoreInput.exe<br>
-Ubuntu : TtT_ScoreInput<br>
+- Windows : **TtT_ScoreInput.exe**<br>
+- Ubuntu : **TtT_ScoreInput**<br>
 <br>
 それぞれのファイルパスを設定します。<br>
 
