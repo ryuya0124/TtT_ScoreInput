@@ -87,6 +87,7 @@ def update_excel(sheet, excel_df, csv_df):
         difficulty = row['difficulty']
         ap_count = row['APCount']
         fc_count = row['FCCount']
+        play_count = row['playCount']
 
         excel_column = difficulty_columns.get(difficulty)
         if excel_column:
@@ -101,14 +102,21 @@ def update_excel(sheet, excel_df, csv_df):
                         cell.value = 'AP'
                     elif fc_count >= 1:
                         cell.value = 'FC'
+                    elif play_count >= 1:
+                        cell.value = 'CL'
                 elif cell.value == 'FC' and ap_count >= 1:
                     cell.value = 'AP'
+                elif cell.value == 'CL' and (fc_count >= 1 or ap_count >= 1):
+                    cell.value = 'FC' if fc_count >= 1 else 'AP'
+                elif cell.value == '' and play_count >= 1:
+                    cell.value = 'CL'
             else:
                 if title not in warnings:
                     warnings[title] = set()
                 warnings[title].add(difficulty)
 
     return warnings
+
 
 # 警告メッセージを表示
 def print_warnings(warnings, root):
