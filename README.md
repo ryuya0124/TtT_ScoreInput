@@ -14,13 +14,20 @@ CSVファイルはこちらから利用できます。<br>
 [Release](https://github.com/ryuya0124/TtT_ScoreInput/releases)から環境に合わせたファイルをダウンロードします。<br>
 <br>
 実行ファイル<br>
-- Windows : **TtT_ScoreInput.exe** <br>
-- Ubuntu : **TtT_ScoreInput** <br>
+Windows : TtT_ScoreInput.exe<br>
+Ubuntu : TtT_ScoreInput<br>
 <br>
 それぞれのファイルパスを設定します。<br>
+
 **デフォルトに設定** を押すとスクリプトのフォルダ内にあるExcelファイルとCSVファイルを自動設定します。<br>
-> [!NOTE] 
-> Excelファイルの名前は**TtT_ClearSheet.xlsx**である必要があります。<br>
+> [!TIP] 
+> Excelファイルの名前は**TtT_ClearSheet.xlsx** である必要があります。
+
+<br>
+処理を開始を押すと処理が開始されます。<br><br>
+
+> [!WARNING] 
+> **TtT_ClearSheet.xlsx** に上書き保存されます。
 
 # 対応OS
 | OS | 対応状況 |
