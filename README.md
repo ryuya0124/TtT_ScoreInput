@@ -12,6 +12,11 @@ CSVファイルはこちらから利用できます。<br>
 
 # 使用方法
 [Release](https://github.com/ryuya0124/TtT_ScoreInput/releases)から環境に合わせたファイルをダウンロードします。<br>
+<br>
+実行ファイル
+Windows : TtT_ScoreInput.exe<br>
+Ubuntu : TtT_ScoreInput<br>
+<br>
 それぞれのファイルパスを設定します。<br>
 **デフォルトに設定** を押すとスクリプトのフォルダ内にあるExcelファイルとCSVファイルを自動設定します。<br>
 > [!NOTE] 
