@@ -29,7 +29,7 @@ jobs:
     - name: Build with PyInstaller
       run: |
         source venv/bin/activate
-        pyinstaller --windowed TtT_ScoreInput.py --name TtT_ScoreInput --distpath dist
+        pyinstaller --windowed TtT_ScoreInput.py --name TtT_ScoreInput
     - name: Prepare Artifact Directory
       run: |
         mkdir -p TtT_ScoreInput
