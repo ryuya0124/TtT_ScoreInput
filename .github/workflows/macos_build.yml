@@ -32,7 +32,7 @@ jobs:
     - name: Build with PyInstaller
       run: |
         source venv/bin/activate
-        pyinstaller --windowed TtT_ScoreInput.py --name TtT_ScoreInput
+        pyinstaller --windowed TtT_ScoreInput.py --name TtT_ScoreInput --distpath dist
 
     - name: Clean up build directory
       run: |
@@ -42,7 +42,7 @@ jobs:
       uses: actions/upload-artifact@v3
       with:
         name: TtT_ScoreInput
-        path: dist/** # distフォルダ内のすべてのファイルを指定
+        path: dist/TtT_ScoreInput.app # distフォルダ内のTtT_ScoreInput.appのみを指定
 
     - name: Delete dist directory
       run: |
