@@ -1,4 +1,4 @@
-name: Build TtT_ScoreInput
+name: Build TtT_ScoreInput_Windows
 
 on:
   workflow_dispatch:
