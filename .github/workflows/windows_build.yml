@@ -37,7 +37,7 @@ jobs:
 
     - name: Compress dist folder contents
       run: |
-        powershell -Command "Compress-Archive -Path dist\TtT_ScoreInput.exe -DestinationPath TtT_ScoreInput.zip"
+        powershell -Command "Compress-Archive -Path dist\TtT_ScoreInput.exe,dist\_internal -DestinationPath TtT_ScoreInput.zip"
 
     - name: Upload Artifact
       uses: actions/upload-artifact@v3
