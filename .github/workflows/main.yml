@@ -28,7 +28,7 @@ jobs:
 
     - name: Build with PyInstaller
       run: |
-        pyinstaller TtT_ScoreInput.py --noconsole
+        pyinstaller TtT_ScoreInput.py --noconsole --name TtT_ScoreInput
 
     - name: Clean up build directory
       run: |
@@ -37,7 +37,7 @@ jobs:
     - name: Compress dist folder contents
       run: |
         cd dist
-        zip -r TtT_ScoreInput.zip TtT_ScoreInput
+        zip -r TtT_ScoreInput.zip TtT_ScoreInput/*  # ここで/*を追加して中身を圧縮
         cd ..
 
     - name: Upload Artifact
