@@ -33,8 +33,8 @@ CSVファイルはこちらから利用できます。<br>
 ----|----
 | Windows11 | 対応 |
 | Windows10 | 多分動く！ |
-| Ubuntu | 簡易対応 |
-| MacOS | 未確認 |
+| Ubuntu | coming soon |
+| MacOS | coming soon |
 
 <br>
 
