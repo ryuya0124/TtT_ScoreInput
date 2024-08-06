@@ -1,6 +1,6 @@
 # TtT_ScoreInput
 # 説明
-テトテコネクトの全楽曲と難易度をまとめたExcelファイルに、TetoteConnect-Scoreを使用してダウンロードしたcsvファイルを元にクリア状況を書き込むツールです。<br>
+テトテコネクトの全楽曲と難易度をまとめたExcelファイルに、TetoteConnect-Scoreを使用してダウンロードしたCSVファイルを元にクリア状況を書き込むツールです。<br>
 <br>
 Excelファイルはこちらから利用できます。<br>
 [TetoteConnect-ClearSheet](https://github.com/neco0814/TetoteConnect-ClearSheet)<br>
