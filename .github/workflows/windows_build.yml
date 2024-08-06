@@ -9,7 +9,7 @@ jobs:
 
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4  # actions/checkoutのバージョンをv4に更新
 
     - name: Set up Python
       uses: actions/setup-python@v4
@@ -31,10 +31,10 @@ jobs:
         Remove-Item -Recurse -Force build
 
     - name: Upload Artifact
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4  # actions/upload-artifactのバージョンをv4に更新
       with:
         name: TtT_ScoreInput
-        path: dist/TtT_ScoreInput/** # dist/TtT_ScoreInputフォルダ内のすべてのファイルを指定
+        path: dist/TtT_ScoreInput/**  # dist/TtT_ScoreInputフォルダ内のすべてのファイルを指定
 
     - name: Delete dist directory
       run: |
