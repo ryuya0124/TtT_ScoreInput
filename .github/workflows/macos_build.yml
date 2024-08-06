@@ -20,19 +20,18 @@ jobs:
         brew install python@3.12
         brew link --force python@3.12
 
-    - name: Set up Python
+    - name: Set up Python virtual environment
       run: |
-        export PATH="/opt/homebrew/opt/python@3.12/bin:$PATH"
-        python3 -m pip install --upgrade pip
+        python3 -m venv venv
+        source venv/bin/activate
+        python -m pip install --upgrade pip
         pip install git+https://github.com/fa0311/pyinstaller
         pip install pandas openpyxl
-
-    - name: Install Tkinter
-      run: |
         brew install python-tk
 
     - name: Build with PyInstaller
       run: |
+        source venv/bin/activate
         pyinstaller --windowed TtT_ScoreInput.py --name TtT_ScoreInput
 
     - name: Clean up build directory
