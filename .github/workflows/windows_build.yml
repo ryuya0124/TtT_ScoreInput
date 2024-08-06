@@ -30,15 +30,11 @@ jobs:
       run: |
         Remove-Item -Recurse -Force build
 
-    - name: Compress dist folder contents
-      run: |
-        powershell -Command "Compress-Archive -Path dist\* -DestinationPath TtT_ScoreInput.zip"
-
     - name: Upload Artifact
       uses: actions/upload-artifact@v3
       with:
         name: TtT_ScoreInput
-        path: TtT_ScoreInput.zip  # 出力されたZIPファイルのパスを指定
+        path: TtT_ScoreInput # 出力されたファイルのパスを指定
 
     - name: Delete dist directory
       run: |
