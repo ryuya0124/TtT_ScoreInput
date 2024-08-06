@@ -23,8 +23,7 @@ Ubuntu : TtT_ScoreInput<br>
 > [!TIP] 
 > Excelファイルの名前は**TtT_ClearSheet.xlsx** である必要があります。
 
-<br>
-処理を開始を押すと処理が開始されます。<br><br>
+ **処理を開始** を押すと処理が開始されます。<br>
 
 > [!WARNING] 
 > **TtT_ClearSheet.xlsx** に上書き保存されます。
