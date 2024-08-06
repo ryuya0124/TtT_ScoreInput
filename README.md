@@ -8,6 +8,8 @@ CSVファイルはこちらから利用できます。<br>
 [TetoteConnect-Score](https://github.com/3-show/TetoteConnect-Score)<br>
 
 ![image](https://github.com/user-attachments/assets/b2385a2c-a2f1-4b67-828b-dacd442af340)
+![image](https://github.com/user-attachments/assets/cfd9fae4-1c29-4f93-adbc-45af4a01eb3f)
+
 
 
 # 使用方法
