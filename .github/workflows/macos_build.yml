@@ -42,7 +42,7 @@ jobs:
       uses: actions/upload-artifact@v3
       with:
         name: TtT_ScoreInput
-        path: dist/TtT_ScoreInput/** # dist/TtT_ScoreInputフォルダ内のすべてのファイルを指定
+        path: dist/** # distフォルダ内のすべてのファイルを指定
 
     - name: Delete dist directory
       run: |
