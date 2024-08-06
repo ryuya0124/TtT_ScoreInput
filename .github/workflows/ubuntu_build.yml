@@ -29,12 +29,6 @@ jobs:
       run: |
         rm -rf build
 
-    - name: Compress dist folder contents
-      run: |
-        cd dist
-        zip -r TtT_ScoreInput.zip TtT_ScoreInput/*  # ここで/*を追加して中身を圧縮
-        cd ..
-
     - name: Upload Artifact
       uses: actions/upload-artifact@v3
       with:
