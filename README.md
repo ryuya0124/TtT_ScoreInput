@@ -20,6 +20,7 @@ CSVファイルはこちらから利用できます。<br>
 実行ファイル<br>
 - Windows : **TtT_ScoreInput.exe**<br>
 - Ubuntu : **TtT_ScoreInput**<br>
+- macOS : **TtT_ScoreInput**<br>
 <br>
 それぞれのファイルパスを設定します。<br>
 
