@@ -34,21 +34,12 @@ jobs:
         source venv/bin/activate
         pyinstaller --windowed TtT_ScoreInput.py --name TtT_ScoreInput
     
-    - name: Prepare Artifact Directory
-      run: |
-        mkdir -p TtT_ScoreInput
-        mv dist/TtT_ScoreInput.app TtT_ScoreInput/
-    
-    - name: Clean up build directory
-      run: |
-        rm -rf build
-    
     - name: Upload Artifact
       uses: actions/upload-artifact@v4
       with:
         name: TtT_ScoreInput
-        path: TtT_ScoreInput # TtT_ScoreInputフォルダをアーティファクトとしてアップロード
+        path: dist # distフォルダをアーティファクトとしてアップロード
     
-    - name: Delete dist directory
+    - name: Clean up build directory
       run: |
-        rm -rf dist
+        rm -rf build dist
