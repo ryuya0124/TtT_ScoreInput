@@ -38,7 +38,7 @@ CSVファイルはこちらから利用できます。<br>
 | Windows11 | 対応 |
 | Windows10 | 多分動く！ |
 | Ubuntu | デバッカー求む! |
-| macOS 14 | 対応 |
+| macOS 13,14 | 対応 |
 
 <br>
 
