@@ -31,7 +31,10 @@ def get_script_dir():
 
 # スクリプトのパス
 SCRIPT_DIR = get_script_dir()
-SCRIPT_PATH = os.path.join(SCRIPT_DIR, 'TtT_ScoreInput.py') if not getattr(sys, 'frozen', False) else sys.executable
+if sys.platform.startswith('darwin'):
+    SCRIPT_PATH = SCRIPT_DIR
+else:
+    SCRIPT_PATH = os.path.join(SCRIPT_DIR, 'TtT_ScoreInput.py') if not getattr(sys, 'frozen', False) else sys.executable
 
 # ファイル検証
 def get_valid_file_path(file_path, prompt_message, file_type):
