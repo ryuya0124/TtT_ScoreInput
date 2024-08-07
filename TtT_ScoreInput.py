@@ -112,27 +112,26 @@ def update_excel(sheet, excel_df, csv_df):
                 column_index = openpyxl.utils.column_index_from_string(excel_column)
                 cell = sheet.cell(row=excel_row_index, column=column_index)
 
-                if cell.value is None or cell.value == '':
-                    if ap_count >= 1:
-                        cell.value = 'AP'
-                    elif fc_count >= 1:
-                        cell.value = 'FC'
-                    elif high_score >= difficulty_borders[difficulty]:
-                        cell.value = 'CL'
-                elif cell.value == 'FC' and ap_count >= 1:
-                    cell.value = 'AP'
-                elif cell.value == 'CL' and (fc_count >= 1 or ap_count >= 1):
-                    cell.value = 'FC' if fc_count >= 1 else 'AP'
-                elif cell.value == '' and high_score >= difficulty_borders[difficulty]:
-                    cell.value = 'CL'
+                new_value = cell.value
+
+                if ap_count >= 1:
+                    new_value = 'AP'
+                elif fc_count >= 1:
+                    new_value = 'FC'
+                elif high_score >= difficulty_borders[difficulty]:
+                    new_value = 'CL'
+                elif high_score >= 0:
+                    new_value = 'FL'
+                
+                if not cell.value or (cell.value in ['FC', 'CL', 'FL'] and new_value == 'AP') or (cell.value == 'CL' and new_value == 'FC'):
+                    cell.value = new_value
+
             else:
                 if title not in warnings:
                     warnings[title] = set()
                 warnings[title].add(difficulty)
 
     return warnings
-
-
 
 # 警告メッセージを表示
 def print_warnings(warnings, root):
