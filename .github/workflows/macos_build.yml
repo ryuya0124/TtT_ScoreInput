@@ -14,27 +14,35 @@ jobs:
     - name: Install Homebrew
       run: |
         /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-    
-    - name: Install Python 3.12.4
+
+    - name: Install Tcl-Tk
       run: |
-        if ! brew ls --versions python@3.12 > /dev/null; then
-          brew install python@3.12
-        fi
-        brew link --overwrite --force python@3.12
+        brew install tcl-tk
+        echo 'export PATH="/usr/local/opt/tcl-tk/bin:$PATH"' >> $BASH_ENV
+        echo 'export LDFLAGS="-L/usr/local/opt/tcl-tk/lib"' >> $BASH_ENV
+        echo 'export CPPFLAGS="-I/usr/local/opt/tcl-tk/include"' >> $BASH_ENV
+        echo 'export PKG_CONFIG_PATH="/usr/local/opt/tcl-tk/lib/pkgconfig"' >> $BASH_ENV
+        source $BASH_ENV
+    
+    - name: Install Python 3.12.4 with Tcl-Tk support
+      run: |
+        brew install pyenv
+        export PYTHON_CONFIGURE_OPTS="--with-tcltk-includes='-I/usr/local/opt/tcl-tk/include' --with-tcltk-libs='-L/usr/local/opt/tcl-tk/lib -ltcl8.6 -ltk8.6'"
+        pyenv install 3.12.4
+        pyenv global 3.12.4
     
     - name: Set up Python virtual environment
       run: |
-        python3 -m venv venv
+        python -m venv venv
         source venv/bin/activate
         python -m pip install --upgrade pip
         pip install git+https://github.com/fa0311/pyinstaller
         pip install pandas openpyxl
-        brew install python-tk
     
     - name: Build with PyInstaller
       run: |
         source venv/bin/activate
-        pyinstaller --windowed TtT_ScoreInput.py --name TtT_ScoreInput
+        pyinstaller --windowed --onefile --osx-bundle-identifier com.example.ttt TtT_ScoreInput.py --name TtT_ScoreInput
     
     - name: Upload Artifact
       uses: actions/upload-artifact@v4
