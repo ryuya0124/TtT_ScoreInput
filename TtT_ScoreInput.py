@@ -18,7 +18,13 @@ except:
 def get_script_dir():
     if getattr(sys, 'frozen', False):
         # .exeファイルの場合
-        return os.path.dirname(sys.executable)
+        script_dir = os.path.dirname(sys.executable)
+        
+        # macOSの.appバンドルの場合
+        if sys.platform == 'darwin' and script_dir.endswith('/Contents/MacOS'):
+            script_dir = os.path.abspath(os.path.join(script_dir, '../../'))
+        
+        return script_dir
     else:
         # .pyファイルの場合
         return os.path.dirname(os.path.abspath(__file__))
