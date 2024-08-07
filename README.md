@@ -1,7 +1,7 @@
 # TtT_ScoreInput
 # 説明
 テトテコネクトの全楽曲と難易度をまとめたExcelファイルに、TetoteConnect-Scoreを使用してダウンロードしたCSVファイルを元にプレイ状況を書き込むツールです。<br>
-<br>
+<br><br>
 Excelファイルはこちらから利用できます。<br>
 [TetoteConnect-ClearSheet](https://github.com/neco0814/TetoteConnect-ClearSheet)<br>
 CSVファイルはこちらから利用できます。<br>
@@ -11,8 +11,13 @@ CSVファイルはこちらから利用できます。<br>
 ![image](https://github.com/user-attachments/assets/75befec7-3315-43dc-b1b1-adf3b520aaf9)
 ![image](https://github.com/user-attachments/assets/423f1f4d-5305-4c28-9039-4b5d06d3ffb2)
 
-
-
+# Excel表記
+| 表記 | 意味 |
+----|----
+| AP | All Perfect |
+| FC | Full Combo |
+| CL | Clear |
+| FL | Failed |
 
 # 使用方法
 [Release](https://github.com/ryuya0124/TtT_ScoreInput/releases)から環境に合わせたファイルをダウンロードします。<br>
