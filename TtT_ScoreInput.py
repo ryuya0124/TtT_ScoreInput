@@ -22,7 +22,7 @@ def get_script_dir():
         
         # macOSの.appバンドルの場合
         if sys.platform.startswith('darwin'):
-            script_dir = os.path.abspath(os.path.join(script_dir, '../../'))
+            script_dir = os.path.abspath(os.path.join(script_dir, '../../../'))
         
         return script_dir
     else:
