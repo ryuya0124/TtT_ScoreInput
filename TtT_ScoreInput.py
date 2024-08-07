@@ -21,7 +21,7 @@ def get_script_dir():
         script_dir = os.path.dirname(sys.executable)
         
         # macOSの.appバンドルの場合
-        if sys.platform == 'darwin' and script_dir.endswith('/Contents/MacOS'):
+        if sys.platform.startswith('darwin'):
             script_dir = os.path.abspath(os.path.join(script_dir, '../../'))
         
         return script_dir
