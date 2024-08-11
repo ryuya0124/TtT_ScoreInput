@@ -38,8 +38,6 @@ else:
 
 # ファイル検証
 def get_valid_file_path(file_path, prompt_message, file_type):
-    if os.path.exists(file_path) and file_path.lower().endswith(file_type):
-        return file_path
     while True:
         file_path = filedialog.askopenfilename(title=prompt_message, filetypes=[(file_type.upper(), f"*{file_type}")])
         if not file_path:
@@ -255,6 +253,11 @@ def create_gui():
             '''if not initial_setup_done:
                 messagebox.showerror("エラー", "CSVファイルが見つかりません。")'''
 
+    def update_file_path(var, dialog_title, file_type):
+        new_path = get_valid_file_path(var.get(), dialog_title, file_type)
+        if new_path:  # new_path が空でない場合にのみ更新
+            var.set(new_path)
+
     def reset_paths():
         excel_path_var.set('')
         csv_path_var.set('')
@@ -271,24 +274,70 @@ def create_gui():
     excel_path_var = tk.StringVar()
     csv_path_var = tk.StringVar()
 
-    tk.Label(root, text="スクリプトのパス:").grid(row=0, column=0, padx=10, pady=5, sticky="e")
-    tk.Entry(root, textvariable=tk.StringVar(value=SCRIPT_PATH), state='readonly', width=60).grid(row=0, column=1, padx=10, pady=5)
-    tk.Button(root, text="フォルダを開く", command=open_script_folder).grid(row=0, column=2, padx=10, pady=5)
+    tk.Label(root, text="スクリプトのパス:").grid(
+        row=0, column=0, padx=10, pady=5, sticky="e"
+    )
+    tk.Entry(root, textvariable=tk.StringVar(value=SCRIPT_PATH), state='readonly', width=60).grid(
+        row=0, column=1, padx=10, pady=5
+    )
+    tk.Button(root, text="フォルダを開く", command=open_script_folder).grid(
+        row=0, column=2, padx=10, pady=5
+    )
 
-    tk.Label(root, text="Excelファイルのパス:").grid(row=1, column=0, padx=10, pady=5, sticky="e")
-    tk.Entry(root, textvariable=excel_path_var, width=60).grid(row=1, column=1, padx=10, pady=5)
-    tk.Button(root, text="参照", command=lambda: excel_path_var.set(get_valid_file_path(excel_path_var.get(), "Excelファイルを選択してください", ".xlsx"))).grid(row=1, column=2, padx=10, pady=5)
+    tk.Label(root, text="Excelファイルのパス:").grid(
+        row=1, column=0, padx=10, pady=5, sticky="e"
+    )
+    tk.Entry(root, textvariable=excel_path_var, width=60).grid(
+        row=1, column=1, padx=10, pady=5
+    )
+    
+    # Excelファイルの参照ボタン
+    tk.Button(
+        root, 
+        text="参照", 
+        command=lambda: update_file_path(
+            excel_path_var, 
+            "Excelファイルを選択してください", 
+            ".xlsx"
+        )
+    ).grid(row=1, column=2, padx=10, pady=5)
 
-    tk.Label(root, text="CSVファイルのパス:").grid(row=2, column=0, padx=10, pady=5, sticky="e")
-    tk.Entry(root, textvariable=csv_path_var, width=60).grid(row=2, column=1, padx=10, pady=5)
-    tk.Button(root, text="参照", command=lambda: csv_path_var.set(get_valid_file_path(csv_path_var.get(), "CSVファイルを選択してください", ".csv"))).grid(row=2, column=2, padx=10, pady=5)
+    tk.Label(root, text="CSVファイルのパス:").grid(
+        row=2, column=0, padx=10, pady=5, sticky="e"
+    )
+    tk.Entry(root, textvariable=csv_path_var, width=60).grid(
+        row=2, column=1, padx=10, pady=5
+    )
 
-    tk.Button(root, text="デフォルトに設定", command=set_default_paths).grid(row=4, column=0, padx=10, pady=5)
-    tk.Button(root, text="パスをリセット", command=reset_paths).grid(row=4, column=1, padx=10, pady=5)
+    # CSVファイルの参照ボタン
+    tk.Button(
+        root, 
+        text="参照", 
+        command=lambda: update_file_path(
+            csv_path_var, 
+            "CSVファイルを選択してください", 
+            ".csv"
+        )
+    ).grid(row=2, column=2, padx=10, pady=5)
 
-    tk.Button(root, text="処理を開始", command=lambda: process_files(excel_path_var.get(), csv_path_var.get(), root)).grid(row=5, column=0, columnspan=3, padx=10, pady=20)
+    tk.Button(root, text="デフォルトに設定", command=set_default_paths).grid(
+        row=4, column=0, padx=10, pady=5
+    )
+    tk.Button(root, text="パスをリセット", command=reset_paths).grid(
+        row=4, column=1, padx=10, pady=5
+    )
 
-    tk.Button(root, text="@_ryuya_0124", command=open_twitter_profile).grid(row=6, column=0, padx=10, pady=5, columnspan=3)
+    tk.Button(
+        root, 
+        text="処理を開始", 
+        command=lambda: process_files(excel_path_var.get(), csv_path_var.get(), root)
+    ).grid(row=5, column=0, columnspan=3, padx=10, pady=20)
+
+    tk.Button(
+        root, 
+        text="@_ryuya_0124", 
+        command=open_twitter_profile
+    ).grid(row=6, column=0, padx=10, pady=5, columnspan=3)
 
     # 初回起動時にデフォルトパスを設定
     if not initial_setup_done:
