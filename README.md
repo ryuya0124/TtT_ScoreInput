@@ -6,6 +6,7 @@ Excelファイルはこちらから利用できます。<br>
 [TetoteConnect-ClearSheet](https://github.com/neco0814/TetoteConnect-ClearSheet)<br>
 CSVファイルはこちらから利用できます。<br>
 [TetoteConnect-Score](https://github.com/3-show/TetoteConnect-Score)<br>
+[TetoconeScoreDataTool](https://github.com/chespins/TetoconeScoreDataTool)
 
 ![image](https://github.com/user-attachments/assets/b2385a2c-a2f1-4b67-828b-dacd442af340)
 ![image](https://github.com/user-attachments/assets/75befec7-3315-43dc-b1b1-adf3b520aaf9)
