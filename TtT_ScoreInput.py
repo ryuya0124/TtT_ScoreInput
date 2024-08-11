@@ -74,44 +74,60 @@ def read_excel_file(temp_file):
 
 # CSVファイルを読み込む
 def read_csv_file(csv_file):
+    csv_type = None
     try:
         csv_df = pd.read_csv(csv_file)
-        if 'title' in csv_df.columns and 'difficulty' in csv_df.columns:
-            return csv_df
+        if 'title' in csv_df.columns and 'difficulty' in csv_df.columns and 'highScore' in csv_df.columns and 'FCCount' in csv_df.columns and 'APCount' in csv_df.columns:
+            csv_type = 0
+            return csv_df, csv_type
+        elif '楽曲名' in csv_df.columns and '難易度' in csv_df.columns and 'ハイスコア' in csv_df.columns and 'フルコンボ回数' in csv_df.columns and 'パーフェクト回数' in csv_df.columns:
+            csv_type = 1
+            return csv_df, csv_type
         else:
             messagebox.showerror("エラー", "CSVファイルに必要なカラムが含まれていません。")
-            return None
+            return None, csv_type
     except Exception as e:
         messagebox.showerror("エラー", f"CSVファイルの読み込みに失敗しました: {e}")
-        return None
+        return None, csv_type
 
 # Excelファイルの更新
-def update_excel(sheet, excel_df, csv_df):
+def update_excel(sheet, excel_df, csv_df, csv_type):
     difficulty_columns = {
-        'Standard': 'I',
-        'Expert': 'J',
-        'Ultimate': 'K',
-        'Maniac': 'L',
-        'Connect': 'M'
+        'standard': 'I',
+        'expert': 'J',
+        'ultimate': 'K',
+        'maniac': 'L',
+        'connect': 'M'
     }
 
     # 難易度ごとのスコアボーダー
     difficulty_borders = {
-        'Standard': 500000,
-        'Expert': 600000,
-        'Ultimate': 700000,
-        'Maniac': 800000,
-        'Connect': 700000
+        'standard': 500000,
+        'expert': 600000,
+        'ultimate': 700000,
+        'maniac': 800000,
+        'connect': 700000
     }
 
     warnings = {}
 
     for index, row in csv_df.iterrows():
-        title = row['title'].rstrip()  # 最後の空白を削除
-        difficulty = row['difficulty']
-        ap_count = row['APCount']
-        fc_count = row['FCCount']
-        high_score = row['highScore']
+
+        if csv_type == 0:
+            title = row['title'].rstrip()  # 最後の空白を削除
+            difficulty = row['difficulty']
+            ap_count = row['APCount']
+            fc_count = row['FCCount']
+            high_score = row['highScore']
+        elif csv_type == 1:
+            title = row["楽曲名"].rstrip()  # 最後の空白を削除
+            difficulty = row["難易度"]
+            ap_count = row['パーフェクト回数']
+            fc_count = row['フルコンボ回数']
+            high_score = row['ハイスコア']
+
+        #csvタイプに依存しないようにすべて小文字へ
+        difficulty = difficulty.lower()  
 
         excel_column = difficulty_columns.get(difficulty)
         if excel_column:
@@ -132,7 +148,7 @@ def update_excel(sheet, excel_df, csv_df):
                 elif high_score >= 0:
                     new_value = 'FL'
                 
-                if not cell.value or (cell.value in ['FC', 'CL', 'FL'] and new_value == 'AP') or (cell.value == 'CL' and new_value == 'FC'):
+                if not cell.value or (cell.value in ['FC', 'CL', 'FL'] and new_value == 'AP') or (cell.value == 'CL' and new_value == 'FC') or (cell.value == 'FL' and new_value == 'CL'):
                     cell.value = new_value
 
             else:
@@ -199,12 +215,14 @@ def process_files(excel_path, csv_path, root):
         return
 
     # CSVファイルの読み込み
-    csv_df = read_csv_file(csv_path)
+    csv_df, csv_type = read_csv_file(csv_path)
     if csv_df is None:
+        return
+    if csv_type is None:
         return
 
     # Excelファイルの更新
-    warnings = update_excel(sheet, excel_df, csv_df)
+    warnings = update_excel(sheet, excel_df, csv_df, csv_type)
     print_warnings(warnings, root)
 
     # Excelファイルの保存
