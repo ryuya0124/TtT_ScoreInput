@@ -79,7 +79,7 @@ cd TtT_ScoreInput
 ```
 
 - 実行ファイルに変換するモジュールのインストール
-通常のPyinstallerではWindows Defenderにウイルス検知されてしまうので、以下のものを使用します。
+<br>通常のPyinstallerではWindows Defenderにウイルス検知されてしまうので、以下のものを使用します。
 ```
 pip install git+https://github.com/fa0311/pyinstaller
 ```
