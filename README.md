@@ -67,6 +67,29 @@ CSVファイルはこちらから利用できます。<br>
 | 英語 | 気が向いたら |
 | その他 | 気が向いたら |
 
+# ビルド方法
+任意のディレクトリで以下を実行します。
+
+- ビルド準備
+```
+git clone https://github.com/ryuya0124/TtT_ScoreInput.git
+cd TtT_ScoreInput
+```
+
+- 実行ファイルに変換するモジュールのインストール
+通常のPyinstallerではWindows Defenderにウイルス検知されてしまうので、以下のものを使用します。
+```
+pip install git+https://github.com/fa0311/pyinstaller
+```
+
+- ビルド開始
+```
+pyinstaller --noconsole TtT_ScoreInput.py
+```
+
+**buildフォルダ**は削除してください。
+**distフォルダ**の中に実行ファイルがあります。
+
 # 注意事項
 このツールは非公式のものであり、使用にあたっては自己責任でお願いします。<br>
 ツールの使用によって生じた損害や問題について、作成者は一切の責任を負いません。<br>
