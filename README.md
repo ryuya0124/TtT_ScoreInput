@@ -22,12 +22,18 @@ CSVファイルはこちらから利用できます。<br>
 
 # 使用方法
 [Release](https://github.com/ryuya0124/TtT_ScoreInput/releases)から環境に合わせたファイルをダウンロードします。<br>
+**実行ファイルを使用する場合**
 <br>
 実行ファイル<br>
 - Windows : **TtT_ScoreInput.exe**<br>
 - Ubuntu : **TtT_ScoreInput**<br>
 - macOS : **TtT_ScoreInput**<br>
 <br>
+**TtT_ScoreInput.pyから実行する場合** <br>
+  以下のコマンドでモジュールをインストールする必要があります。<br>
+  `pip install pandas openpyxl`
+  <br>
+
 それぞれのファイルパスを設定します。<br>
 
 **デフォルトに設定** を押すとスクリプトのフォルダ内にあるExcelファイルとCSVファイルを自動設定します。<br>
