@@ -74,7 +74,7 @@ pip install pandas openpyxl
 
 - ビルド準備
 ```
-git clone `https://github.com/ryuya0124/TtT_ScoreInput.git`
+git clone https\://github.com/ryuya0124/TtT_ScoreInput.git
 cd TtT_ScoreInput
 ```
 
