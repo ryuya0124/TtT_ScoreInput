@@ -31,7 +31,9 @@ CSVファイルはこちらから利用できます。<br>
 **TtT_ScoreInput.pyから実行する場合**
 <br>
 以下のコマンドでモジュールをインストールする必要があります。<br>
-`pip install pandas openpyxl`
+```
+pip install pandas openpyxl
+```
 <br>
 <br>
 それぞれのファイルパスを設定します。<br>
