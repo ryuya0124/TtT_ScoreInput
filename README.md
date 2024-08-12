@@ -90,11 +90,12 @@ pip install git+https://github.com/fa0311/pyinstaller
 ```
 
 - ビルド開始
-```-
+```
 pyinstaller --noconsole TtT_ScoreInput.py
 ```
 
-**buildフォルダ**は削除してください。
+- ビルド終了後
+<br>**buildフォルダ**は削除してください。<br>
 **distフォルダ**の中に実行ファイルがあります。
 
 # 注意事項
