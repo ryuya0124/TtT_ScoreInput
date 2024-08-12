@@ -72,6 +72,11 @@ pip install pandas openpyxl
 # ビルド方法
 任意のディレクトリで以下を実行します。
 
+- Pythonのインストール
+このツールはPython 3.12.xで開発しています。<br>
+下限は調べていませんが、おそらく3.x以上なら動くと思います。<br>
+各自好きな方法でインストールしてください。
+
 - ビルド準備
 ```
 git clone https://github.com/ryuya0124/TtT_ScoreInput.git
@@ -85,7 +90,7 @@ pip install git+https://github.com/fa0311/pyinstaller
 ```
 
 - ビルド開始
-```
+```-
 pyinstaller --noconsole TtT_ScoreInput.py
 ```
 
