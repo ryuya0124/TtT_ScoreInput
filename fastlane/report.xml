@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites>
+  <testsuite name="fastlane.lanes">
+    
+    
+    
+      
+      <testcase classname="fastlane.lanes" name="0: default_platform" time="0.000141">
+        
+      </testcase>
+    
+      
+      <testcase classname="fastlane.lanes" name="1: python -m PyInstaller --clean --noconfirm --windowed --onedir --target-arch arm64 --osx-bundle-identifier net.ryuya-dev.TtT-ScoreInput --codesign-identity Developer\ ID\ Application:\ ryuya\ watanabe\ \(FZ35ZF3CZV\) --name TtT_ScoreInput TtT_ScoreInput.py" time="72.977589">
+        
+      </testcase>
+    
+      
+      <testcase classname="fastlane.lanes" name="2: codesign --verify --deep --strict --verbose\=2 dist/TtT_ScoreInput.app" time="0.188363">
+        
+      </testcase>
+    
+  </testsuite>
+</testsuites>

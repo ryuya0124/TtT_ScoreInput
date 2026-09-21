@@ -1,0 +1,98 @@
+require 'fileutils'
+
+default_platform(:mac)
+
+SIGNING_IDENTITY = 'Developer ID Application: ryuya watanabe (FZ35ZF3CZV)'
+PROJECT_ROOT = File.expand_path('..', __dir__)
+
+platform :mac do
+  desc 'Install the Developer ID certificate managed by match'
+  lane :setup_certificates do
+    if ENV['CI']
+      keychain_name = 'ci_keychain'
+      keychain_password = ENV.fetch('MATCH_PASSWORD')
+      keychain_path = File.expand_path("~/Library/Keychains/#{keychain_name}-db")
+
+      create_keychain(
+        name: keychain_name,
+        password: keychain_password,
+        default_keychain: true,
+        unlock: true,
+        timeout: 3600,
+        lock_when_sleeps: false,
+        add_to_search_list: true
+      )
+      match(
+        type: 'developer_id',
+        platform: 'macos',
+        readonly: true,
+        skip_provisioning_profiles: true,
+        keychain_name: keychain_name,
+        keychain_password: keychain_password
+      )
+      sh("security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k '#{keychain_password}' '#{keychain_path}'")
+    else
+      match(type: 'developer_id', platform: 'macos', readonly: true, skip_provisioning_profiles: true)
+    end
+  end
+
+  desc 'Build and sign the Apple Silicon application'
+  lane :build_signed do
+    Dir.chdir(PROJECT_ROOT) do
+      sh(
+        'python', '-m', 'PyInstaller',
+        '--clean', '--noconfirm', '--windowed', '--onedir',
+        '--target-arch', 'arm64',
+        '--osx-bundle-identifier', 'net.ryuya-dev.TtT-ScoreInput',
+        '--codesign-identity', SIGNING_IDENTITY,
+        '--name', 'TtT_ScoreInput',
+        'TtT_ScoreInput.py'
+      )
+      sh('codesign', '--verify', '--deep', '--strict', '--verbose=2', 'dist/TtT_ScoreInput.app')
+    end
+  end
+
+  desc 'Notarize the application and staple the ticket'
+  lane :notarize_release do
+    Dir.chdir(PROJECT_ROOT) do
+      archive_path = File.expand_path('dist/TtT_ScoreInput-notarization.zip')
+      dmg_staging_path = File.expand_path('dist/dmg-staging')
+      dmg_path = File.expand_path('dist/TtT_ScoreInput-macos-arm64.dmg')
+
+      sh('ditto', '-c', '-k', '--sequesterRsrc', '--keepParent', 'dist/TtT_ScoreInput.app', archive_path)
+      sh(
+        'xcrun', 'notarytool', 'submit', archive_path,
+        '--key', ENV.fetch('APPLE_API_KEY'),
+        '--key-id', ENV.fetch('APPLE_API_KEY_ID'),
+        '--issuer', ENV.fetch('APPLE_API_ISSUER'),
+        '--wait'
+      )
+      sh('xcrun', 'stapler', 'staple', 'dist/TtT_ScoreInput.app')
+      sh('xcrun', 'stapler', 'validate', 'dist/TtT_ScoreInput.app')
+      File.delete(archive_path) if File.exist?(archive_path)
+
+      FileUtils.rm_rf(dmg_staging_path)
+      FileUtils.mkdir_p(dmg_staging_path)
+      FileUtils.cp_r('dist/TtT_ScoreInput.app', dmg_staging_path)
+      FileUtils.ln_s('/Applications', File.join(dmg_staging_path, 'Applications'))
+      FileUtils.rm_f(dmg_path)
+      sh(
+        'hdiutil', 'create',
+        '-volname', 'TtT ScoreInput',
+        '-srcfolder', dmg_staging_path,
+        '-ov', '-format', 'UDZO',
+        dmg_path
+      )
+      sh(
+        'xcrun', 'notarytool', 'submit', dmg_path,
+        '--key', ENV.fetch('APPLE_API_KEY'),
+        '--key-id', ENV.fetch('APPLE_API_KEY_ID'),
+        '--issuer', ENV.fetch('APPLE_API_ISSUER'),
+        '--wait'
+      )
+      sh('xcrun', 'stapler', 'staple', dmg_path)
+      sh('xcrun', 'stapler', 'validate', dmg_path)
+      FileUtils.rm_rf(dmg_staging_path)
+    end
+  end
+end

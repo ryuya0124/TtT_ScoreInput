@@ -1,0 +1,148 @@
+name: Build and release
+
+on:
+  workflow_dispatch:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    name: ${{ matrix.name }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: Windows 2025 x64
+            os: windows-2025
+            artifact: TtT_ScoreInput-windows-x64
+          - name: Ubuntu latest x64
+            os: ubuntu-latest
+            artifact: TtT_ScoreInput-ubuntu-x64
+          - name: macOS 26 Apple Silicon
+            os: macos-26
+            artifact: TtT_ScoreInput-macos-arm64
+
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v7
+
+      - name: Set up Python
+        if: runner.os != 'macOS'
+        uses: actions/setup-python@v7
+        with:
+          python-version: '3.14'
+          cache: pip
+          cache-dependency-path: requirements-build.txt
+
+      - name: Set up Python with Tk on macOS
+        if: runner.os == 'macOS'
+        run: |
+          brew install python@3.14 python-tk@3.14
+          /opt/homebrew/bin/python3.14 -m venv .venv
+          echo "$GITHUB_WORKSPACE/.venv/bin" >> "$GITHUB_PATH"
+          .venv/bin/python -c "import tkinter; print(tkinter.TkVersion)"
+
+      - name: Install application dependencies
+        run: python -m pip install --upgrade --requirement requirements.txt
+
+      - name: Install current PyInstaller
+        if: runner.os != 'Windows'
+        run: python -m pip install --upgrade pyinstaller==6.22.3
+
+      - name: Install fastlane
+        if: runner.os == 'macOS'
+        run: gem install fastlane -v 2.240.1
+
+      - name: Prepare App Store Connect API key
+        if: runner.os == 'macOS'
+        env:
+          APPLE_API_KEY_BASE64: ${{ secrets.APPLE_API_KEY_BASE64 }}
+          APPLE_API_KEY_ID: ${{ secrets.APPLE_API_KEY_ID }}
+        run: |
+          echo "$APPLE_API_KEY_BASE64" | base64 --decode > "$RUNNER_TEMP/AuthKey_${APPLE_API_KEY_ID}.p8"
+          chmod 600 "$RUNNER_TEMP/AuthKey_${APPLE_API_KEY_ID}.p8"
+
+      - name: Install Developer ID certificate with match
+        if: runner.os == 'macOS'
+        run: fastlane mac setup_certificates
+        env:
+          MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
+          MATCH_GIT_BASIC_AUTHORIZATION: ${{ secrets.MATCH_GIT_BASIC_AUTHORIZATION }}
+
+      - name: Build current PyInstaller bootloader locally
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          git clone --depth 1 --branch v6.22.3 https://github.com/pyinstaller/pyinstaller.git .pyinstaller-source
+          python -m pip install --upgrade setuptools wheel
+          Push-Location .pyinstaller-source/bootloader
+          python waf distclean all
+          Pop-Location
+          python -m pip install .pyinstaller-source
+
+      - name: Run tests
+        run: python -m unittest discover -s tests -v
+
+      - name: Build application
+        if: runner.os != 'macOS'
+        run: python -m PyInstaller --clean --noconfirm --windowed --onedir --name TtT_ScoreInput TtT_ScoreInput.py
+
+      - name: Build signed Apple Silicon application
+        if: runner.os == 'macOS'
+        run: fastlane mac build_signed
+
+      - name: Notarize and staple Apple Silicon application
+        if: runner.os == 'macOS'
+        run: fastlane mac notarize_release
+        env:
+          APPLE_API_KEY_ID: ${{ secrets.APPLE_API_KEY_ID }}
+          APPLE_API_ISSUER: ${{ secrets.APPLE_API_ISSUER }}
+          APPLE_API_KEY: ${{ runner.temp }}/AuthKey_${{ secrets.APPLE_API_KEY_ID }}.p8
+
+      - name: Package Windows build
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: Compress-Archive -Path dist/TtT_ScoreInput -DestinationPath "${{ matrix.artifact }}.zip"
+
+      - name: Package Ubuntu build
+        if: runner.os == 'Linux'
+        run: tar -C dist -czf "${{ matrix.artifact }}.tar.gz" TtT_ScoreInput
+
+      - name: Verify and package Apple Silicon build
+        if: runner.os == 'macOS'
+        run: |
+          test "$(lipo -archs dist/TtT_ScoreInput.app/Contents/MacOS/TtT_ScoreInput)" = "arm64"
+          codesign --verify --deep --strict --verbose=2 dist/TtT_ScoreInput.app
+          xcrun stapler validate dist/TtT_ScoreInput.app
+          xcrun stapler validate dist/TtT_ScoreInput-macos-arm64.dmg
+          cp dist/TtT_ScoreInput-macos-arm64.dmg "${{ matrix.artifact }}.dmg"
+
+      - name: Upload build
+        uses: actions/upload-artifact@v7
+        with:
+          name: ${{ matrix.artifact }}
+          path: ${{ matrix.artifact }}.*
+          if-no-files-found: error
+
+  release:
+    name: Publish GitHub release
+    if: startsWith(github.ref, 'refs/tags/')
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download builds
+        uses: actions/download-artifact@v8
+        with:
+          path: release-assets
+          merge-multiple: true
+
+      - name: Publish release
+        uses: softprops/action-gh-release@v3
+        with:
+          generate_release_notes: true
+          files: release-assets/*

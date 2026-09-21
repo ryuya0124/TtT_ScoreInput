@@ -8,22 +8,26 @@ import glob
 import webbrowser
 import sys
 import ctypes
+import tempfile
+from pathlib import Path
+from score_logic import update_excel
 
-try:
-    ctypes.windll.shcore.SetProcessDpiAwareness(True)
-except:
-    pass
+if sys.platform == 'win32':
+    try:
+        ctypes.windll.shcore.SetProcessDpiAwareness(True)
+    except (AttributeError, OSError):
+        pass
 
 # スクリプトのパスを取得する関数
 def get_script_dir():
     if getattr(sys, 'frozen', False):
         # .exeファイルの場合
         script_dir = os.path.dirname(sys.executable)
-        
+
         # macOSの.appバンドルの場合
         if sys.platform.startswith('darwin'):
             script_dir = os.path.abspath(os.path.join(script_dir, '../../../'))
-        
+
         return script_dir
     else:
         # .pyファイルの場合
@@ -43,7 +47,7 @@ def get_valid_file_path(file_path, prompt_message, file_type):
         if not file_path:
             return ''  # キャンセルされた場合は空文字を返す
         if os.path.exists(file_path) and file_path.lower().endswith(file_type):
-            return file_path.replace('/', '\\')  # パス区切り文字を \ に変換
+            return os.path.normpath(file_path)
         else:
             messagebox.showerror("エラー", f"'{file_path}' は存在しないか、{file_type}ファイルではありません。もう一度試してください。")
 
@@ -88,74 +92,6 @@ def read_csv_file(csv_file):
         messagebox.showerror("エラー", f"CSVファイルの読み込みに失敗しました: {e}")
         return None, csv_type
 
-# Excelファイルの更新
-def update_excel(sheet, excel_df, csv_df, csv_type):
-    difficulty_columns = {
-        'standard': 'I',
-        'expert': 'J',
-        'ultimate': 'K',
-        'maniac': 'L',
-        'connect': 'M'
-    }
-
-    # 難易度ごとのスコアボーダー
-    difficulty_borders = {
-        'standard': 500000,
-        'expert': 600000,
-        'ultimate': 700000,
-        'maniac': 800000,
-        'connect': 700000
-    }
-
-    warnings = {}
-
-    for index, row in csv_df.iterrows():
-
-        if csv_type == 0:
-            title = row['title'].rstrip()  # 最後の空白を削除
-            difficulty = row['difficulty']
-            ap_count = row['APCount']
-            fc_count = row['FCCount']
-            high_score = row['highScore']
-        elif csv_type == 1:
-            title = row["楽曲名"].rstrip()  # 最後の空白を削除
-            difficulty = row["難易度"]
-            ap_count = row['パーフェクト回数']
-            fc_count = row['フルコンボ回数']
-            high_score = row['ハイスコア']
-
-        #csvタイプに依存しないようにすべて小文字へ
-        difficulty = difficulty.lower()  
-
-        excel_column = difficulty_columns.get(difficulty)
-        if excel_column:
-            excel_row_index = excel_df[excel_df['Title'].str.rstrip() == title].index  # 最後の空白を削除
-            if not excel_row_index.empty:
-                excel_row_index = excel_row_index[0] + 3
-                column_index = openpyxl.utils.column_index_from_string(excel_column)
-                cell = sheet.cell(row=excel_row_index, column=column_index)
-
-                new_value = cell.value
-
-                if ap_count >= 1:
-                    new_value = 'AP'
-                elif fc_count >= 1:
-                    new_value = 'FC'
-                elif high_score >= difficulty_borders[difficulty]:
-                    new_value = 'CL'
-                elif high_score >= 0:
-                    new_value = 'FL'
-                
-                if not cell.value or (cell.value in ['FC', 'CL', 'FL'] and new_value == 'AP') or (cell.value == 'CL' and new_value == 'FC') or (cell.value == 'FL' and new_value == 'CL'):
-                    cell.value = new_value
-
-            else:
-                if title not in warnings:
-                    warnings[title] = set()
-                warnings[title].add(difficulty)
-
-    return warnings
-
 # 警告メッセージを表示
 def print_warnings(warnings, root):
     if warnings:
@@ -192,7 +128,7 @@ def save_excel_file(book, output_file):
 # 処理開始
 def process_files(excel_path, csv_path, root):
     missing_paths = []
-    
+
     # ExcelファイルとCSVファイルの存在確認
     if not os.path.exists(excel_path):
         missing_paths.append("Excelファイル")
@@ -206,34 +142,39 @@ def process_files(excel_path, csv_path, root):
         return
 
     # 一時ファイルの作成と読み込み
-    temp_file = 'temp_' + os.path.basename(excel_path)
-    copy_file(excel_path, temp_file)
-    excel_df, book, sheet = read_excel_file(temp_file)
-    if excel_df is None or book is None or sheet is None:
-        return
+    with tempfile.NamedTemporaryFile(suffix='.xlsx', delete=False) as temp:
+        temp_file = temp.name
+    book = None
+    try:
+        copy_file(excel_path, temp_file)
+        excel_df, book, sheet = read_excel_file(temp_file)
+        if excel_df is None or book is None or sheet is None:
+            return
 
     # CSVファイルの読み込み
-    csv_df, csv_type = read_csv_file(csv_path)
-    if csv_df is None:
-        return
-    if csv_type is None:
-        return
+        csv_df, csv_type = read_csv_file(csv_path)
+        if csv_df is None or csv_type is None:
+            return
 
     # Excelファイルの更新
-    warnings = update_excel(sheet, excel_df, csv_df, csv_type)
-    print_warnings(warnings, root)
+        warnings = update_excel(sheet, excel_df, csv_df, csv_type)
+        print_warnings(warnings, root)
 
     # Excelファイルの保存
-    if save_excel_file(book, excel_path):
-        os.remove(temp_file)
-    else:
-        os.remove(temp_file)  # アクセス権限エラーの場合もtempファイルを削除
+        save_excel_file(book, excel_path)
+    finally:
+        if book is not None:
+            book.close()
+        try:
+            os.remove(temp_file)
+        except FileNotFoundError:
+            pass
 
 
 # GUIの設定
 def create_gui():
     def open_script_folder():
-        webbrowser.open(SCRIPT_DIR)
+        webbrowser.open(Path(SCRIPT_DIR).resolve().as_uri())
 
     def set_default_paths():
         excel_default_path = os.path.join(SCRIPT_DIR, 'TtT_ClearSheet.xlsx')
@@ -290,14 +231,14 @@ def create_gui():
     tk.Entry(root, textvariable=excel_path_var, width=60).grid(
         row=1, column=1, padx=10, pady=5
     )
-    
+
     # Excelファイルの参照ボタン
     tk.Button(
-        root, 
-        text="参照", 
+        root,
+        text="参照",
         command=lambda: update_file_path(
-            excel_path_var, 
-            "Excelファイルを選択してください", 
+            excel_path_var,
+            "Excelファイルを選択してください",
             ".xlsx"
         )
     ).grid(row=1, column=2, padx=10, pady=5)
@@ -311,11 +252,11 @@ def create_gui():
 
     # CSVファイルの参照ボタン
     tk.Button(
-        root, 
-        text="参照", 
+        root,
+        text="参照",
         command=lambda: update_file_path(
-            csv_path_var, 
-            "CSVファイルを選択してください", 
+            csv_path_var,
+            "CSVファイルを選択してください",
             ".csv"
         )
     ).grid(row=2, column=2, padx=10, pady=5)
@@ -328,14 +269,14 @@ def create_gui():
     )
 
     tk.Button(
-        root, 
-        text="処理を開始", 
+        root,
+        text="処理を開始",
         command=lambda: process_files(excel_path_var.get(), csv_path_var.get(), root)
     ).grid(row=5, column=0, columnspan=3, padx=10, pady=20)
 
     tk.Button(
-        root, 
-        text="@_ryuya_0124", 
+        root,
+        text="@_ryuya_0124",
         command=open_twitter_profile
     ).grid(row=6, column=0, padx=10, pady=5, columnspan=3)
 

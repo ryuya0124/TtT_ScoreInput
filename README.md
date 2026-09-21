@@ -22,6 +22,7 @@ CSVファイルはこちらから利用できます。<br>
 
 # 使用方法
 [Release](https://github.com/ryuya0124/TtT_ScoreInput/releases)から環境に合わせたファイルをダウンロードします。<br>
+全OS版ともポータブルです。macOS版は署名・公証済みDMGを開いて`.app`をApplicationsへドラッグし、アンインストール時はその`.app`をゴミ箱へ移してください。Windows／Ubuntu版は展開したフォルダを削除すればアンインストールできます。<br>
 **実行ファイルを使用する場合**
 <br>
 - Windows : **TtT_ScoreInput.exe**<br>
@@ -30,9 +31,9 @@ CSVファイルはこちらから利用できます。<br>
 
 **TtT_ScoreInput.pyから実行する場合**
 <br>
-以下のコマンドでモジュールをインストールする必要があります。<br>
+Python 3.14をインストールし、以下のコマンドで依存関係を導入します。<br>
 ```
-pip install pandas openpyxl
+python -m pip install -r requirements.txt
 ```
 <br>
 <br>
@@ -50,10 +51,9 @@ pip install pandas openpyxl
 # 対応OS
 | OS | 対応状況 |
 ----|----
-| Windows11 | 対応 |
-| Windows10 | 多分動く！ |
-| Ubuntu | デバッカー求む! |
-| macOS 13,14 | 修正作業中 |
+| Windows 11 x64 | 対応（Windows Server 2025でビルド） |
+| Ubuntu latest x64 | 対応 |
+| macOS 26 Apple Silicon | 対応 |
 
 <br>
 
@@ -70,33 +70,17 @@ pip install pandas openpyxl
 | その他 | 気が向いたら |
 
 # ビルド方法
-任意のディレクトリで以下を実行します。
+Python 3.14をインストールし、任意のディレクトリで以下を実行します。macOSのHomebrew版Pythonを使う場合は、先に`brew install python-tk@3.14`でTkも導入してください。
 
-- Pythonのインストール
-<br>このツールはPython 3.12.xで開発しています。<br>
-下限は調べていませんが、おそらく3.x以上なら動くと思います。<br>
-各自好きな方法でインストールしてください。
-
-- ビルド準備
 ```
 git clone https://github.com/ryuya0124/TtT_ScoreInput.git
 cd TtT_ScoreInput
+python -m pip install -r requirements-build.txt
+python -m unittest discover -s tests -v
+python -m PyInstaller --clean --noconfirm --windowed --onedir --name TtT_ScoreInput TtT_ScoreInput.py
 ```
 
-- 実行ファイルに変換するモジュールのインストール
-<br>通常のPyinstallerではWindows Defenderにウイルス検知されてしまうので、以下のものを使用します。
-```
-pip install git+https://github.com/fa0311/pyinstaller
-```
-
-- ビルド開始
-```
-pyinstaller --noconsole TtT_ScoreInput.py
-```
-
-- ビルド終了後
-<br>**buildフォルダ**は削除してください。<br>
-**distフォルダ**の中に実行ファイルがあります。
+GitHub Actionsはタグをpushすると3 OS向け成果物を作成し、GitHub Releaseへ自動添付します。macOS版はfastlane matchで管理するDeveloper ID Application証明書で署名し、Appleの公証とstapleを完了したDMGとして配布します。Windows版は誤検知リスクを下げるため、公式PyInstaller 6.22.3のbootloaderをWindowsランナー上でソースからビルドし、`onedir`形式で配布します。これは誤検知の完全な防止を保証するものではありません。
 
 # 注意事項
 このツールは非公式のものであり、使用にあたっては自己責任でお願いします。<br>
