@@ -83,6 +83,8 @@ platform :mac do
         '-ov', '-format', 'UDZO',
         dmg_path
       )
+      sh('codesign', '--force', '--timestamp', '--sign', SIGNING_IDENTITY, dmg_path)
+      sh('codesign', '--verify', '--strict', '--verbose=2', dmg_path)
       sh(
         'xcrun', 'notarytool', 'submit', dmg_path,
         '--key', ENV.fetch('APPLE_API_KEY'),
@@ -92,6 +94,7 @@ platform :mac do
       )
       sh('xcrun', 'stapler', 'staple', dmg_path)
       sh('xcrun', 'stapler', 'validate', dmg_path)
+      sh('spctl', '--assess', '--type', 'open', '--context', 'context:primary-signature', '--verbose=2', dmg_path)
       FileUtils.rm_rf(dmg_staging_path)
     end
   end
